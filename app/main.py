@@ -5,64 +5,73 @@ Streamlit web application for the Data Quality Guardian.
 Allows users to upload CSV datasets, run automated quality checks,
 and get AI-generated explanations for issues.
 """
-
 import streamlit as st
 import pandas as pd
-from app.quality_checks import run_quality_checks
-from app.ai_explainer import explain_issues
+from io import StringIO
+from quality_checks import generate_row_level_report
 
-# -----------------------------
-# 1️⃣ Streamlit Page Configuration
-# -----------------------------
-st.set_page_config(
-    page_title="Data Quality Guardian",
-    page_icon="🛡️",
-    layout="wide"
-)
+st.title("Data Quality Guardian - Interactive Row-Level Report")
 
-# -----------------------------
-# 2️⃣ App Title & Description
-# -----------------------------
-st.title("🛡️ Data Quality Guardian")
-st.markdown("""
-Upload a CSV dataset to automatically check for:
-- Missing values
-- Duplicate rows
-- Data type issues
-- Outliers
+uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
-Click the **Generate AI Explanation** button to get plain-English insights and suggested fixes.
-""")
-
-# -----------------------------
-# 3️⃣ File Uploader
-# -----------------------------
-uploaded_file = st.file_uploader("📂 Upload your CSV file", type=["csv"])
-
-if uploaded_file:
-    # Load CSV
+if uploaded_file is not None:
+    # Load CSV into DataFrame
     df = pd.read_csv(uploaded_file)
-    st.success("✅ Data Loaded Successfully!")
-    
-    # Show first 5 rows
-    st.subheader("Preview of Dataset")
-    st.dataframe(df.head())
+    st.subheader("Dataset Preview")
+    st.dataframe(df)
 
-    # -----------------------------
-    # 4️⃣ Run Data Quality Checks
-    # -----------------------------
-    report = run_quality_checks(df)
-    st.subheader("📊 Data Quality Report")
-    st.json(report)
+    # Generate row-level report
+    report = generate_row_level_report(df, id_col='id')
+    st.subheader("Data Quality Report (Plain Text)")
+    st.text(report)
 
-    # -----------------------------
-    # 5️⃣ Generate AI Explanations
-    # -----------------------------
-    if st.button("🧠 Generate AI Explanation"):
-        with st.spinner("Analyzing dataset with AI..."):
-            explanation = explain_issues(report)
-        st.subheader("📝 AI Insights & Suggested Fixes")
-        st.markdown(explanation)
+    # Download full report as text
+    st.download_button(
+        label="Download Full Report",
+        data=report,
+        file_name="data_quality_report.txt",
+        mime="text/plain"
+    )
 
-else:
-    st.info("Please upload a CSV file to get started.")
+    # Interactive filtering for specific issues
+    st.subheader("View Specific Issues")
+    issue_type = st.selectbox("Select Issue Type", ["Missing Values", "Duplicates", "Outliers"])
+
+    filtered_rows = pd.DataFrame()
+
+    if issue_type == "Missing Values":
+        filtered_rows = df[df.isnull().any(axis=1)]
+        st.write("Rows with missing values:" if not filtered_rows.empty else "No missing values found")
+        if not filtered_rows.empty:
+            st.dataframe(filtered_rows)
+
+    elif issue_type == "Duplicates":
+        filtered_rows = df[df.duplicated(keep=False)]
+        st.write("Duplicate rows:" if not filtered_rows.empty else "No duplicate rows found")
+        if not filtered_rows.empty:
+            st.dataframe(filtered_rows)
+
+    elif issue_type == "Outliers":
+        numeric_cols = df.select_dtypes(include='number').columns
+        outlier_rows = pd.DataFrame()
+        for col in numeric_cols:
+            mean = df[col].mean()
+            std = df[col].std()
+            outliers = df[(df[col] - mean).abs() > 3*std]
+            outlier_rows = pd.concat([outlier_rows, outliers])
+        filtered_rows = outlier_rows.drop_duplicates()
+        st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
+        if not filtered_rows.empty:
+            st.dataframe(filtered_rows)
+
+    # Download filtered rows as CSV
+    if not filtered_rows.empty:
+        csv_buffer = StringIO()
+        filtered_rows.to_csv(csv_buffer, index=False)
+        st.download_button(
+            label=f"Download {issue_type} Rows as CSV",
+            data=csv_buffer.getvalue(),
+            file_name=f"{issue_type.replace(' ', '_').lower()}_rows.csv",
+            mime="text/csv"
+        )
+
