@@ -40,28 +40,33 @@ if uploaded_file is not None:
     filtered_rows = pd.DataFrame()
 
     if issue_type == "Missing Values":
-        # Find rows with any missing values
         filtered_rows = df[df.isnull().any(axis=1)]
         st.write("Rows with missing values:" if not filtered_rows.empty else "No missing values found")
         if not filtered_rows.empty:
             st.dataframe(filtered_rows)
 
     elif issue_type == "Duplicates":
-        # Find duplicate rows across all columns
         filtered_rows = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
         st.write("Duplicate rows:" if not filtered_rows.empty else "No duplicate rows found")
         if not filtered_rows.empty:
             st.dataframe(filtered_rows)
 
     elif issue_type == "Outliers":
-        # Detect outliers for numeric columns using 3 standard deviations
         numeric_cols = df.select_dtypes(include='number').columns
         outlier_rows = pd.DataFrame()
         for col in numeric_cols:
-            col_series = df[col].dropna()  # ignore NaN for calculations
-            mean = col_series.mean()
-            std = col_series.std()
-            outliers = df[(df[col] - mean).abs() > 3*std]
+            col_series = pd.to_numeric(df[col], errors='coerce').dropna()
+            if len(col_series) < 50:
+                Q1 = col_series.quantile(0.25)
+                Q3 = col_series.quantile(0.75)
+                IQR = Q3 - Q1
+                lower_bound = Q1 - 1.5 * IQR
+                upper_bound = Q3 + 1.5 * IQR
+                outliers = df[(df[col] < lower_bound) | (df[col] > upper_bound)]
+            else:
+                mean = col_series.mean()
+                std = col_series.std()
+                outliers = df[(df[col] - mean).abs() > 3 * std]
             outlier_rows = pd.concat([outlier_rows, outliers])
         filtered_rows = outlier_rows.drop_duplicates()
         st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
@@ -78,3 +83,4 @@ if uploaded_file is not None:
             file_name=f"{issue_type.replace(' ', '_').lower()}_rows.csv",
             mime="text/csv"
         )
+
