@@ -30,8 +30,9 @@ def generate_row_level_report(df, id_col='id'):
 
     # Detect duplicate rows
     report += "Duplicates:\n"
-# duplicates = df[df.duplicated(keep=False)] -- Checks for full row duplicates
-    duplicate_rows = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
+    # Checks for full row duplicates
+   duplicates = df[df.duplicated(keep=False)] 
+    #duplicate_rows = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
     if duplicates.empty:
         report += "- No duplicate rows found\n"
     else:
