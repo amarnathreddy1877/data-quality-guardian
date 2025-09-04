@@ -73,3 +73,5 @@ The `data/` folder includes **3 sample CSV files** demonstrating different issue
 ```bash
 git clone https://github.com/amarnathreddy1877/data-quality-guardian.git
 cd data-quality-guardian
+pip install -r requirements.txt
+streamlit run app/main.py
