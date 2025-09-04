@@ -20,3 +20,12 @@ An **AI-powered data quality assistant** that automatically scans datasets, dete
 ---
 
 ## 📂 Project Structure
+data-quality-guardian/
+│── app/
+│ ├── quality_checks.py # Core data quality checks
+│ ├── ai_explainer.py # AI explanations + fixes
+│ └── main.py # Streamlit app
+│── data/
+│ └── sample_data.csv # Example dataset
+│── requirements.txt # Dependencies
+│── README.md # Project documentation
