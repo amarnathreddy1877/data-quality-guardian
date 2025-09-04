@@ -25,7 +25,7 @@ if uploaded_file is not None:
     st.subheader("Data Quality Report (Plain Text)")
     st.text(report)
 
-    # Download full report as text
+    # Download full report as text file
     st.download_button(
         label="Download Full Report",
         data=report,
@@ -40,35 +40,35 @@ if uploaded_file is not None:
     filtered_rows = pd.DataFrame()
 
     if issue_type == "Missing Values":
+        # Find rows with any missing values
         filtered_rows = df[df.isnull().any(axis=1)]
         st.write("Rows with missing values:" if not filtered_rows.empty else "No missing values found")
         if not filtered_rows.empty:
             st.dataframe(filtered_rows)
 
     elif issue_type == "Duplicates":
-        filtered_rows = df[df.duplicated(keep=False)]
+        # Find duplicate rows across all columns
+        filtered_rows = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
         st.write("Duplicate rows:" if not filtered_rows.empty else "No duplicate rows found")
         if not filtered_rows.empty:
             st.dataframe(filtered_rows)
 
-   elif issue_type == "Outliers":
-    numeric_cols = df.select_dtypes(include='number').columns
-    outlier_rows = pd.DataFrame()
-    for col in numeric_cols:
-        # Drop NaN values to avoid calculation issues
-        col_series = df[col].dropna()
-        mean = col_series.mean()
-        std = col_series.std()
-        # Detect outliers using 3 standard deviations
-        outliers = df[(df[col] - mean).abs() > 3*std]
-        outlier_rows = pd.concat([outlier_rows, outliers])
-    filtered_rows = outlier_rows.drop_duplicates()
-    st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
-    if not filtered_rows.empty:
-        st.dataframe(filtered_rows)
+    elif issue_type == "Outliers":
+        # Detect outliers for numeric columns using 3 standard deviations
+        numeric_cols = df.select_dtypes(include='number').columns
+        outlier_rows = pd.DataFrame()
+        for col in numeric_cols:
+            col_series = df[col].dropna()  # ignore NaN for calculations
+            mean = col_series.mean()
+            std = col_series.std()
+            outliers = df[(df[col] - mean).abs() > 3*std]
+            outlier_rows = pd.concat([outlier_rows, outliers])
+        filtered_rows = outlier_rows.drop_duplicates()
+        st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
+        if not filtered_rows.empty:
+            st.dataframe(filtered_rows)
 
-
-    # Download filtered rows as CSV
+    # Download filtered rows as CSV if any exist
     if not filtered_rows.empty:
         csv_buffer = StringIO()
         filtered_rows.to_csv(csv_buffer, index=False)
@@ -78,4 +78,3 @@ if uploaded_file is not None:
             file_name=f"{issue_type.replace(' ', '_').lower()}_rows.csv",
             mime="text/csv"
         )
-
