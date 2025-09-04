@@ -1,12 +1,8 @@
-# Core libraries for data handling
-pandas          # for loading, cleaning, and analyzing datasets
-numpy           # for numerical operations
+# Streamlit: Interactive web app framework for Python
+streamlit
 
-# Machine learning & statistics
-scikit-learn    # for statistical checks and potential extensions
+# Pandas: Data manipulation & analysis
+pandas
 
-# AI integration
-openai          # to generate plain-English explanations and suggested fixes
-
-# Web app interface
-streamlit       # to create interactive UI for users
+# NumPy: Numerical computing and array operations
+numpy
