@@ -11,10 +11,14 @@ import pandas as pd
 import numpy as np
 
 def generate_row_level_report(df, id_col='id'):
-    # Initialize the report string
+    """
+    Generate a row-level data quality report for the given DataFrame.
+    Checks for missing values, duplicates, and outliers in numeric columns.
+    """
+
     report = "📊 Data Quality Report (Row-Level)\n\n"
 
-    # Check for missing values
+    # ----- Missing Values -----
     report += "Missing Values:\n"
     missing = df.isnull()
     if missing.sum().sum() == 0:
@@ -28,11 +32,9 @@ def generate_row_level_report(df, id_col='id'):
                     report += f"- '{col}' missing for id: {row_id} ({names[i]})\n"
     report += "\n"
 
-    # Detect duplicate rows
+    # ----- Duplicates -----
     report += "Duplicates:\n"
-    # Checks for full row duplicates
-   duplicates = df[df.duplicated(keep=False)] 
-    #duplicate_rows = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
+    duplicates = df[df.duplicated(subset=df.columns.tolist(), keep=False)]
     if duplicates.empty:
         report += "- No duplicate rows found\n"
     else:
@@ -41,12 +43,13 @@ def generate_row_level_report(df, id_col='id'):
             report += f"- Duplicate record found for id: {dup_id}\n"
     report += "\n"
 
-    # Detect outliers in numeric columns
+    # ----- Outliers -----
     report += "Outliers:\n"
     numeric_cols = df.select_dtypes(include=np.number).columns
     for col in numeric_cols:
-        mean = df[col].mean()
-        std = df[col].std()
+        col_series = df[col].dropna()  # ignore NaN
+        mean = col_series.mean()
+        std = col_series.std()
         outlier_rows = df[(df[col] - mean).abs() > 3*std]
         if not outlier_rows.empty:
             for idx, row in outlier_rows.iterrows():
@@ -56,4 +59,3 @@ def generate_row_level_report(df, id_col='id'):
             report += f"- No outliers detected in '{col}'\n"
 
     return report
-
