@@ -51,18 +51,22 @@ if uploaded_file is not None:
         if not filtered_rows.empty:
             st.dataframe(filtered_rows)
 
-    elif issue_type == "Outliers":
-        numeric_cols = df.select_dtypes(include='number').columns
-        outlier_rows = pd.DataFrame()
-        for col in numeric_cols:
-            mean = df[col].mean()
-            std = df[col].std()
-            outliers = df[(df[col] - mean).abs() > 3*std]
-            outlier_rows = pd.concat([outlier_rows, outliers])
-        filtered_rows = outlier_rows.drop_duplicates()
-        st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
-        if not filtered_rows.empty:
-            st.dataframe(filtered_rows)
+   elif issue_type == "Outliers":
+    numeric_cols = df.select_dtypes(include='number').columns
+    outlier_rows = pd.DataFrame()
+    for col in numeric_cols:
+        # Drop NaN values to avoid calculation issues
+        col_series = df[col].dropna()
+        mean = col_series.mean()
+        std = col_series.std()
+        # Detect outliers using 3 standard deviations
+        outliers = df[(df[col] - mean).abs() > 3*std]
+        outlier_rows = pd.concat([outlier_rows, outliers])
+    filtered_rows = outlier_rows.drop_duplicates()
+    st.write("Rows with outliers:" if not filtered_rows.empty else "No outliers detected")
+    if not filtered_rows.empty:
+        st.dataframe(filtered_rows)
+
 
     # Download filtered rows as CSV
     if not filtered_rows.empty:
