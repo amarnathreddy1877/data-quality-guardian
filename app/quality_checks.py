@@ -6,7 +6,6 @@ It detects missing values, duplicates, data type issues, and outliers.
 
 Designed for data analysts to quickly understand dataset issues before analysis.
 """
-
 import pandas as pd
 import numpy as np
 
@@ -47,10 +46,22 @@ def generate_row_level_report(df, id_col='id'):
     report += "Outliers:\n"
     numeric_cols = df.select_dtypes(include=np.number).columns
     for col in numeric_cols:
-        col_series = df[col].dropna()  # ignore NaN
-        mean = col_series.mean()
-        std = col_series.std()
-        outlier_rows = df[(df[col] - mean).abs() > 3*std]
+        col_series = pd.to_numeric(df[col], errors='coerce').dropna()
+        
+        if len(col_series) < 50:
+            # Small dataset → use IQR
+            Q1 = col_series.quantile(0.25)
+            Q3 = col_series.quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+            outlier_rows = df[(df[col] < lower_bound) | (df[col] > upper_bound)]
+        else:
+            # Large dataset → use z-score
+            mean = col_series.mean()
+            std = col_series.std()
+            outlier_rows = df[(df[col] - mean).abs() > 3 * std]
+        
         if not outlier_rows.empty:
             for idx, row in outlier_rows.iterrows():
                 name = row['name'] if 'name' in df.columns else 'N/A'
