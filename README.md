@@ -71,5 +71,5 @@ The `data/` folder includes **3 sample CSV files** demonstrating different issue
 1. **Clone the repo**
 
 ```bash
-git clone https://github.com/yourusername/data-quality-guardian.git
+git clone https://github.com/amarnathreddy1877/data-quality-guardian.git
 cd data-quality-guardian
