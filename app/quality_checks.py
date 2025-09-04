@@ -8,51 +8,50 @@ Designed for data analysts to quickly understand dataset issues before analysis.
 """
 
 import pandas as pd
+import numpy as np
 
-def run_quality_checks(df: pd.DataFrame) -> dict:
-    """
-    Run data quality checks on the given DataFrame.
-    
-    Parameters:
-        df (pd.DataFrame): The dataset to check.
-        
-    Returns:
-        dict: A report dictionary containing:
-            - missing_values: columns with missing data and counts
-            - duplicates: number of duplicate rows
-            - data_types: column names with their data types
-            - outliers: numeric columns with count of outliers (>3 std deviation)
-    """
-    
-    report = {}
+def generate_row_level_report(df, id_col='id'):
+    # Initialize the report string
+    report = "📊 Data Quality Report (Row-Level)\n\n"
 
-    # -----------------------------
-    # 1️⃣ Missing Values Check
-    # -----------------------------
-    missing = df.isnull().sum()
-    report['missing_values'] = missing[missing > 0].to_dict()
+    # Check for missing values
+    report += "Missing Values:\n"
+    missing = df.isnull()
+    if missing.sum().sum() == 0:
+        report += "- No missing values found\n"
+    else:
+        for col in df.columns:
+            if missing[col].sum() > 0:
+                missing_rows = df[df[col].isnull()][id_col].tolist()
+                names = df[df[col].isnull()]['name'].tolist() if 'name' in df.columns else ['N/A']*len(missing_rows)
+                for i, row_id in enumerate(missing_rows):
+                    report += f"- '{col}' missing for id: {row_id} ({names[i]})\n"
+    report += "\n"
 
-    # -----------------------------
-    # 2️⃣ Duplicate Rows Check
-    # -----------------------------
-    report['duplicates'] = int(df.duplicated().sum())
+    # Detect duplicate rows
+    report += "Duplicates:\n"
+    duplicates = df[df.duplicated(keep=False)]
+    if duplicates.empty:
+        report += "- No duplicate rows found\n"
+    else:
+        dup_ids = duplicates[id_col].tolist()
+        for dup_id in set(dup_ids):
+            report += f"- Duplicate record found for id: {dup_id}\n"
+    report += "\n"
 
-    # -----------------------------
-    # 3️⃣ Data Types Check
-    # -----------------------------
-    report['data_types'] = df.dtypes.astype(str).to_dict()
-
-    # -----------------------------
-    # 4️⃣ Outlier Detection (Numeric Columns)
-    # Using basic rule: values beyond mean ± 3*std are considered outliers
-    # -----------------------------
-    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
-    outliers = {}
+    # Detect outliers in numeric columns
+    report += "Outliers:\n"
+    numeric_cols = df.select_dtypes(include=np.number).columns
     for col in numeric_cols:
-        mean, std = df[col].mean(), df[col].std()
-        outlier_count = ((df[col] > mean + 3*std) | (df[col] < mean - 3*std)).sum()
-        outliers[col] = int(outlier_count)
-    
-    report['outliers'] = outliers
+        mean = df[col].mean()
+        std = df[col].std()
+        outlier_rows = df[(df[col] - mean).abs() > 3*std]
+        if not outlier_rows.empty:
+            for idx, row in outlier_rows.iterrows():
+                name = row['name'] if 'name' in df.columns else 'N/A'
+                report += f"- Outlier detected in '{col}' for id: {row[id_col]} ({name}) -> {row[col]}\n"
+        else:
+            report += f"- No outliers detected in '{col}'\n"
 
     return report
+
