@@ -66,12 +66,22 @@ The `data/` folder includes **3 sample CSV files** demonstrating different issue
 
 ---
 
-## ⚡ Getting Started
 
-1. **Clone the repo**
+## 🚀 Run the Data Quality Guardian App
+
+Follow these simple steps to run the app locally:
 
 ```bash
+# 1️⃣ Clone the repository
 git clone https://github.com/amarnathreddy1877/data-quality-guardian.git
 cd data-quality-guardian
+
+# 2️⃣ Install required Python packages
 pip install -r requirements.txt
+
+# 3️⃣ Launch the interactive Streamlit app
 streamlit run app/main.py
+
+💡 Tip: After running, your browser should open automatically.
+If it doesn’t, copy the Local URL from the terminal (usually http://localhost:8501) and open it manually.
+Use sample CSV files from the data/ folder to test the app quickly.
