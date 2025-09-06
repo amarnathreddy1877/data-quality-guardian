@@ -46,7 +46,6 @@ This project demonstrates practical **data cleaning, preprocessing, and interact
 
 ![Filtered Rows](https://via.placeholder.com/600x200.png?text=Filtered+Rows+Download)
 
-*(Replace placeholders with actual screenshots from your app)*
 
 ---
 
@@ -122,6 +121,7 @@ pip install -r requirements.txt
 #4. Run the Streamlit App
 # Run the interactive app
 streamlit run app/main.py
+
 
 #5.Deactivate virtual environment
 deactivate
