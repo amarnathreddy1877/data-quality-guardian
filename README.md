@@ -36,7 +36,7 @@ This project demonstrates practical **data cleaning, preprocessing, and interact
 
 **1️⃣ Dataset Preview**  
 
-![Dataset Preview](https://via.placeholder.com/600x150.png?text=Dataset+Preview)
+![Upload Dataset](assets/screenshot_upload.png)
 
 **2️⃣ Row-Level Data Quality Report**  
 
@@ -123,7 +123,7 @@ pip install -r requirements.txt
 streamlit run app/main.py
 
 
-#5.Deactivate virtual environment
+#5.Deactivate virtual environment if you have activated before
 deactivate
 
 
