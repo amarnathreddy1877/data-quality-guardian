@@ -36,7 +36,7 @@ This project demonstrates practical **data cleaning, preprocessing, and interact
 
 **1️⃣ Dataset Preview**  
 
-![Upload Dataset](assests/Dataset_Report.png)
+![Upload Dataset](assests/Dataset_Preview.png)
 
 **2️⃣ Row-Level Data Quality Report**  
 
