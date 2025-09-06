@@ -1,18 +1,26 @@
 # 📊 Data Quality Guardian
 
-**Data Quality Guardian** is an interactive data quality tool designed for **analysts and data engineers**. It identifies **missing values, duplicate records, and outliers** in CSV datasets and generates **row-level actionable reports**. Built with **Python**, **Pandas**, and **Streamlit**, this project demonstrates modern data analysis and automation skills.
+**Data Quality Guardian** is an interactive **row-level data quality analysis tool** built with **Python & Streamlit**.  
+It enables data analysts and teams to **detect missing values, duplicate records, and outliers** in CSV datasets with **actionable, row-level insights**.  
+
+This project demonstrates practical **data cleaning, preprocessing, and interactive dashboard development skills**, making it a strong portfolio project for recruiters and hiring managers.  
 
 ---
 
-## 🚀 Key Features
+## 🌟 Features
 
-- **Row-Level Insights:** Pinpoints exactly which rows have missing data, duplicates, or outliers.
-- **Interactive Exploration:** Filter by issue type (Missing Values, Duplicates, Outliers) and inspect affected rows directly in the app.
-- **Exportable Reports:** Download full reports as `.txt` or filtered rows as `.csv` for further analysis.
-- **Recruiter-Friendly Presentation:** Plain-text reports with clear, actionable messages for decision-makers.
-- **Reusable for Any CSV Dataset:** Works with any CSV that has a unique `id` column.
+- ✅ **Missing Values Detection** – Identify missing values per row and column  
+- ✅ **Duplicate Record Detection** – Detect duplicates across all columns  
+- ✅ **Adaptive Outlier Detection**  
+  - IQR method for **small datasets (< 50 rows)**  
+  - Z-score method for **large datasets (≥ 50 rows)**  
+- ✅ **Row-Level Report** – Clear, human-readable report with IDs & values  
+- ✅ **Interactive Exploration** – Filter issues by category (Missing, Duplicates, Outliers)  
+- ✅ **Download Options** – Export full report (`.txt`) or filtered rows (`.csv`)  
+- 🖥️ **Built with Streamlit** – Easy to run locally or deploy on the web  
 
 ---
+
 
 ## 🛠️ Tech Stack
 
@@ -77,15 +85,45 @@ Use sample CSV files from the data/ folder to test the app quickly.
 
 
 ```bash
-# 1️⃣ Clone the repository
-git clone https://github.com/amarnathreddy1877/data-quality-guardian.git
+# 1. Clone the repository
+# Clone your GitHub repository
+git clone <your_repo_url>
+
+# Move into the project directory
 cd data-quality-guardian
 
-# 2️⃣ Install required Python packages
+
+# 2. Setup Python Environment
+Option A: Using system Python
+# Check Python version (must be 3.9+)
+python --version
+
+# Or on some systems
+python3 --version
+
+# Optional: Using virtual environment (recommended)
+# Create a virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+source venv/bin/activate
+
+#✅ Using a virtual environment keeps dependencies isolated and avoids conflicts.
+
+
+#3. Install Dependencies
+# Install all required Python packages
 pip install -r requirements.txt
 
-# 3️⃣ Launch the interactive Streamlit app
+
+#4. Run the Streamlit App
+# Run the interactive app
 streamlit run app/main.py
 
+#5.Deactivate virtual environment
+deactivate
 
 
