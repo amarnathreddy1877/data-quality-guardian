@@ -36,15 +36,15 @@ This project demonstrates practical **data cleaning, preprocessing, and interact
 
 **1️⃣ Dataset Preview**  
 
-![Upload Dataset](assets/screenshot_upload.png)
+![Upload Dataset](assests/Dataset_Report.png)
 
 **2️⃣ Row-Level Data Quality Report**  
 
-![Data Quality Report](https://via.placeholder.com/600x200.png?text=Row-Level+Report)
+![Data Quality Report](assests/Data_Quality.png)
 
 **3️⃣ Filtered Issue View & Download Option**  
 
-![Filtered Rows](https://via.placeholder.com/600x200.png?text=Filtered+Rows+Download)
+![Specific Issues](assests/Specific_Issues.png)
 
 
 ---
